@@ -17,6 +17,7 @@ export class PostsController {
   // News Feed dekha
   @Get('feed')
   async getFeed(@Req() req) {
+    console.log("Debug: Fetching news feed for user ID ->", req.user.userId);
     return this.postsService.getNewsFeed(req.user.userId);
   }
 }

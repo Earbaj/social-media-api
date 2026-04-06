@@ -22,19 +22,23 @@ export class PostsService {
 
   // 2. News Feed (Jei user-ke follow kori tader post)
   async getNewsFeed(userId: string) {
-    const user = await this.userModel.findById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const followingList = user.following || [];
-
-    // Shudhu amar o amar following der post ashbe
-    return this.postModel
-      .find({
-        author: { $in: [...followingList, new Types.ObjectId(userId)] },
-      })
-      .populate('author', 'username email') // Author-er profile details show korbe
-      .sort({ createdAt: -1 }) // Newest post first
-      .exec();
+  // Database checking
+  const user = await this.userModel.findById(userId);
+  
+  if (!user) {
+    // Jodi user na paoa jay, tahole check koro userId thik ache ki na
+    console.log("Debug: User ID not found in DB ->", userId);
+    return []; // Khali feed return koro error na diye
   }
+
+  const followingList = user.following || [];
+
+  return this.postModel
+    .find({
+      author: { $in: [...followingList, new Types.ObjectId(userId)] },
+    })
+    .populate('author', 'username email')
+    .sort({ createdAt: -1 })
+    .exec();
+}
 }
