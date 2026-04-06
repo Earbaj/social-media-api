@@ -34,11 +34,33 @@ export class PostsService {
   const followingList = user.following || [];
 
   return this.postModel
-    .find({
-      author: { $in: [...followingList, new Types.ObjectId(userId)] },
-    })
-    .populate('author', 'username email')
-    .sort({ createdAt: -1 })
-    .exec();
+  .find({ author: { $in: [...followingList, new Types.ObjectId(userId)] } })
+  .populate('author', 'username profilePic')
+  .select('content likes createdAt') // Likes array-ta niye ashbe
+  .sort({ createdAt: -1 })
+  .exec();
 }
+
+async toggleLike(postId: string, userId: string) {
+  const post = await this.postModel.findById(postId);
+  if (!post) throw new Error('Post not found');
+
+  // Check koro user ki agei like dise?
+  const hasLiked = post.likes.includes(new Types.ObjectId(userId));
+
+  if (hasLiked) {
+    // Age like thakle sheta shorai dao (Unlike)
+    await this.postModel.findByIdAndUpdate(postId, {
+      $pull: { likes: new Types.ObjectId(userId) }
+    });
+    return { message: 'Post unliked' };
+  } else {
+    // Like na thakle add koro (Like)
+    await this.postModel.findByIdAndUpdate(postId, {
+      $addToSet: { likes: new Types.ObjectId(userId) }
+    });
+    return { message: 'Post liked' };
+  }
+}
+
 }

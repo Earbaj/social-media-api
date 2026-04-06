@@ -1,11 +1,11 @@
-import { Controller, Post, Get, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, Req, Param } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('posts')
 @UseGuards(AuthGuard('jwt')) // Eita thakar mane token chara ekhane dhuka jabena
 export class PostsController {
-  constructor(private postsService: PostsService) {}
+  constructor(private postsService: PostsService) { }
 
   // Post kora
   @Post()
@@ -19,5 +19,11 @@ export class PostsController {
   async getFeed(@Req() req) {
     console.log("Debug: Fetching news feed for user ID ->", req.user.userId);
     return this.postsService.getNewsFeed(req.user.userId);
+  }
+
+  @Post(':id/like')
+  @UseGuards(AuthGuard('jwt'))
+  async likePost(@Param('id') postId: string, @Req() req) {
+    return this.postsService.toggleLike(postId, req.user.userId);
   }
 }
