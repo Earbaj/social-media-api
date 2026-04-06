@@ -22,4 +22,8 @@ export class UsersService {
   async getProfile(username: string) {
     return this.userModel.findOne({ username }).populate('followers following', 'username profilePic');
   }
+ 
+  async findAll() {
+    return this.userModel.find().exec();
+  }
 }
