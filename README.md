@@ -1,98 +1,203 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Social Media API (NestJS + MongoDB)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust and scalable Social Media API built with **NestJS**, **Mongoose (MongoDB)**, and **JWT Authentication**. This API allows users to register, login, follow/unfollow others, create posts, like/unlike posts, and view a personalized news feed.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Features
 
-## Description
+-   **Authentication**: Secure registration and login using JWT and password hashing (bcrypt).
+-   **User Management**: Follow and unfollow users to build your network.
+-   **Profile**: View your own profile with follower/following counts.
+-   **Posts**: Create posts with text content.
+-   **Interactions**: Like and unlike posts.
+-   **News Feed**: A dynamic feed showing posts from yourself and the users you follow, sorted by the latest first.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠️ Tech Stack
 
-## Project setup
+-   **Framework**: [NestJS](https://nestjs.com/) (Node.js)
+-   **Database**: [MongoDB](https://www.mongodb.com/) (via Mongoose)
+-   **Authentication**: JWT (JSON Web Token)
+-   **Validation**: Class-validator (implicit via NestJS)
+-   **Security**: Bcrypt for password hashing
 
-```bash
-$ npm install
-```
+---
 
-## Compile and run the project
+## ⚙️ Installation & Setup
 
-```bash
-# development
-$ npm run start
+1.  **Clone the Repository**:
+    ```bash
+    git clone <repository-url>
+    cd social-media-api
+    ```
 
-# watch mode
-$ npm run start:dev
+2.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
 
-# production mode
-$ npm run start:prod
-```
+3.  **Configure Environment Variables**:
+    Create a `.env` file in the root directory and add the following (refer to `example.env`):
+    ```env
+    MONGODB_URI=your_mongodb_connection_string
+    JWT_SECRET=your_jwt_secret_key
+    JWT_EXPIRES_IN=1d
+    PORT=4000
+    ```
 
-## Run tests
+4.  **Run the Application**:
+    ```bash
+    # Development mode
+    npm run start:dev
 
-```bash
-# unit tests
-$ npm run test
+    # Production mode
+    npm run start:prod
+    ```
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## 📖 API Documentation
 
-## Deployment
+### 1. Authentication Module (`/auth`)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+#### **Register User**
+Create a new user account.
+- **Endpoint**: `POST /auth/register`
+- **Body**:
+  ```json
+  {
+    "username": "earbaj",
+    "email": "earbaj@example.com",
+    "password": "strongpassword123",
+    "bio": "Software Engineer & Tech Enthusiast"
+  }
+  ```
+- **Success Response** (201 Created):
+  ```json
+  {
+    "_id": "65f1a...",
+    "username": "earbaj",
+    "email": "earbaj@example.com",
+    "bio": "Software Engineer & Tech Enthusiast",
+    "followers": [],
+    "following": [],
+    "createdAt": "2024-03-12T...",
+    "updatedAt": "2024-03-12T..."
+  }
+  ```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+#### **Login User**
+Authenticates a user and returns a JWT token.
+- **Endpoint**: `POST /auth/login`
+- **Body**:
+  ```json
+  {
+    "email": "earbaj@example.com",
+    "password": "strongpassword123"
+  }
+  ```
+- **Success Response** (200 OK):
+  ```json
+  {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR..."
+  }
+  ```
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. User Module (`/users`)
+*Authorization required for all endpoints.*
 
-## Resources
+#### **Get My Profile**
+Fetch the current logged-in user's profile data.
+- **Endpoint**: `GET /users/me`
+- **Headers**: `Authorization: Bearer <token>`
+- **Success Response** (200 OK):
+  ```json
+  {
+    "_id": "65f1a...",
+    "username": "earbaj",
+    "email": "earbaj@example.com",
+    "bio": "...",
+    "followers": [
+      { "_id": "...", "username": "friend1", "profilePic": "..." }
+    ],
+    "following": [],
+    "createdAt": "..."
+  }
+  ```
 
-Check out a few resources that may come in handy when working with NestJS:
+#### **Follow/Unfollow User**
+Toggle follow/unfollow for a target user.
+- **Endpoint**: `POST /users/follow/:id`
+- **Headers**: `Authorization: Bearer <token>`
+- **Path Param**: `:id` (ID of the user to follow/unfollow)
+- **Success Response** (200 OK):
+  ```json
+  {
+    "message": "Followed successfully" // or "Unfollowed successfully"
+  }
+  ```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+### 3. Posts Module (`/posts`)
+*Authorization required for all endpoints.*
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+#### **Create Post**
+Create a new post.
+- **Endpoint**: `POST /posts`
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**:
+  ```json
+  {
+    "content": "Hello world! This is my first post on this awesome API."
+  }
+  ```
+- **Success Response** (201 Created):
+  ```json
+  {
+    "_id": "65f2b...",
+    "content": "Hello world!...",
+    "author": "65f1a...",
+    "likes": [],
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+  ```
 
-## Stay in touch
+#### **Get News Feed**
+Get posts from yourself and users you follow.
+- **Endpoint**: `GET /posts/feed`
+- **Headers**: `Authorization: Bearer <token>`
+- **Success Response** (200 OK):
+  ```json
+  [
+    {
+      "_id": "65f2b...",
+      "content": "Hello world!...",
+      "author": {
+        "_id": "65f1a...",
+        "username": "earbaj",
+        "profilePic": "..."
+      },
+      "likes": ["65f3c..."],
+      "createdAt": "2024-03-12T..."
+    }
+  ]
+  ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### **Like/Unlike Post**
+Toggle like/unlike for a specific post.
+- **Endpoint**: `POST /posts/:id/like`
+- **Headers**: `Authorization: Bearer <token>`
+- **Path Param**: `:id` (ID of the post to like/unlike)
+- **Success Response** (200 OK):
+  ```json
+  {
+    "message": "Post liked" // or "Post unliked"
+  }
+  ```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 🛡️ License
+Distributed under the MIT License.
